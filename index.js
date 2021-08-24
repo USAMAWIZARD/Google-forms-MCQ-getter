@@ -1,22 +1,44 @@
-app=require("express");
-server=app();
+var express = require("express");
+var app = express();
 
 const spawn = require("child_process").spawn;
-const bodyParser= require('body-parser');
-server.use(bodyParser.urlencoded({extended:true}))
-server.post("/",(req,res)=>{
-console.log(req.body.examLink)
-const pythonProcess = spawn('python3',["./ScrapQuestions.py",req.body.examLink]);
-
-pythonProcess.stdout.on('data', (data) => {
-res.send(`${data}`)
-console.log(`${data}`)
-res.end()
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.post("/", (req, res) => {
+  const pythonProcess = spawn("py", ["./ScrapQuestions.py", req.body.url]);
+  pythonProcess.stdout.on("data", (data) => {
+    parseddata = JsonParser(data.toString());
+    res.json(parseddata);
+  });
+  pythonProcess.on("error", (err) => console.log(err));
 });
+JsonParser = (e) => {
+  // url ="https://docs.google.com/forms/d/e/1FAIpQLSfZhFkXX_hyoChxAsGrcIQ_Too7aRkzRUeqZsnw2a6LeufWzg/viewform?edit2=2_ABaOnucjWH4peJPBmW72i9JOPiWGUYJPYvmC1LGgyFfN7J2apRy3htlWGfv0XCJbMQ";
+  arrofobb = [];
+  data = eval(e)[0];
+  let count = 0;
+  while (typeof data[count] != "object") {
+    count += 1;
+  }
+  data = data[count];
+  for (let i = 0; i < data.length; i++) {
+    temp = {};
+    optionpos = data[i].length - 1;
+    if (
+      typeof data[i][optionpos][0] == "object" &&
+      data[i][optionpos][0][1] !== undefined
+    ) {
+      option = [];
+      temp.question = data[i][1];
 
-});
-
-
-server.listen(
-    3020
-);
+      for (let j = 0; j < data[i][optionpos][0][1].length; j++) {
+        option.push(data[i][optionpos][0][1][j][0]);
+        temp.option = option;
+      }
+      arrofobb.push(temp);
+    }
+  }
+  return arrofobb;
+};
+port = 3000;
+app.listen(port, () => console.log(`listening on ${port}`));

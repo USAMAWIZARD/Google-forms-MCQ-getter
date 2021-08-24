@@ -13,7 +13,6 @@ app.post("/", (req, res) => {
   pythonProcess.on("error", (err) => console.log(err));
 });
 JsonParser = (e) => {
-  // url ="https://docs.google.com/forms/d/e/1FAIpQLSfZhFkXX_hyoChxAsGrcIQ_Too7aRkzRUeqZsnw2a6LeufWzg/viewform?edit2=2_ABaOnucjWH4peJPBmW72i9JOPiWGUYJPYvmC1LGgyFfN7J2apRy3htlWGfv0XCJbMQ";
   arrofobb = [];
   data = eval(e)[0];
   let count = 0;
